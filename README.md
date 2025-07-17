@@ -138,3 +138,161 @@ Una vez configurado todo:
 
 - Usa políticas IAM personalizadas.
 - Limita la cuenta solo a ciertos datasets.
+
+
+
+
+
+# 🔐 Guía: Conectar FastAPI a BigQuery usando Google Secret Manager (sin `credentials.json` físico)
+
+
+## 🎯 Objetivo
+
+Permitir que una API FastAPI se conecte a BigQuery **de forma segura**, **sin necesidad de guardar un archivo de credenciales `.json` en el sistema de archivos**, usando **Google Secret Manager**.
+
+---
+
+## 🧩 Requisitos
+
+- Proyecto en Google Cloud (`hospitaldigital-461216`)
+- Una cuenta de servicio con permisos de BigQuery
+- FastAPI como backend
+- Secret Manager habilitado
+
+---
+
+## ✅ Paso 1: Crear la cuenta de servicio (si no la tienes)
+
+1. Ve a IAM → Cuentas de servicio
+2. Haz clic en **“Crear cuenta de servicio”**
+3. Nombre: `fastapi-bq-access`
+4. Roles:
+    - `BigQuery Data Viewer`
+    - `BigQuery Job User`
+5. Al finalizar, **crea una clave tipo JSON**
+6. Se descargará un archivo: `credentials.json`
+
+---
+
+## ✅ Paso 2: Habilitar Secret Manager
+
+1. Ve a API Library
+2. Busca “Secret Manager API”
+3. Haz clic en **"Habilitar"**
+
+---
+
+## ✅ Paso 3: Crear el secreto con las credenciales
+
+1. Ve a Secret Manager
+2. Clic en **“Crear secreto”**
+3. Nombre del secreto: `fastapi-bigquery-credentials`
+4. En contenido secreto: **copia y pega todo el contenido del archivo `credentials.json`**
+5. Clic en **“Crear”**
+
+---
+
+## ✅ Paso 4: Dar permisos para acceder al secreto
+
+Ve a IAM, busca tu **cuenta de servicio**, y edítala.
+
+Agrega el siguiente rol:
+
+- `Secret Manager Secret Accessor` (`roles/secretmanager.secretAccessor`)
+
+Esto permite que FastAPI (ejecutándose bajo esa cuenta de servicio) pueda acceder al secreto.
+
+---
+
+## ✅ Paso 5: Instalar librerías necesarias
+
+```bash
+pip install fastapi uvicorn google-cloud-bigquery google-cloud-secret-manager
+```
+
+
+Ejecuta tu app:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+Luego accede a:
+
+`http://localhost:8000/nacionalidades`
+
+Deberías ver los resultados de BigQuery sin tener un archivo `credentials.json` en el disco.
+
+---
+
+## 🛡️ Seguridad y buenas prácticas
+
+| Recomendación | Razón |
+| --- | --- |
+| Nunca guardes el archivo `.json` local | Riesgo de filtración o exposición accidental |
+| Usa Secret Manager para credenciales | Es el método recomendado por Google Cloud |
+| Limita el acceso a secretos por IAM | Menor privilegio = mayor seguridad |
+
+
+
+### Permiso "Accesor de secretos de Secret Manager"
+
+Este rol es fundamental para cualquier aplicación o servicio que necesite **leer el valor o contenido real** de un secreto almacenado en Google Secret Manager. Sin este permiso, una entidad (como una cuenta de servicio) solo puede ver los metadatos del secreto (su nombre, versiones, políticas), pero no puede acceder a la información sensible que guarda.
+
+### Identificador del Rol (IAM)
+
+- **Nombre en la consola (español):** Accesor de secretos de Secret Manager
+- **Nombre en la consola (inglés):** Secret Manager Secret Accessor
+- **ID del rol:** `roles/secretmanager.secretAccessor`
+
+---
+
+### Qué Permite este Rol
+
+Este rol otorga específicamente el permiso:
+
+- `secretmanager.versions.access`: Este permiso permite a la entidad **acceder a la carga útil (payload) de una versión de un secreto**. En otras palabras, le permite descargar y leer el contenido cifrado del secreto, el cual luego se descifra para su uso.
+
+---
+
+### Cuándo es Necesario
+
+Este permiso es indispensable en escenarios como el tuyo, donde:
+
+- Una aplicación (como tu API de FastAPI) necesita recuperar credenciales, claves API, configuración de bases de datos o cualquier otra información sensible que se almacena en Secret Manager.
+- Servicios de Google Cloud (como Cloud Functions, Cloud Run, GKE) necesitan leer secretos para funcionar correctamente.
+- Cualquier script o proceso que requiera utilizar el valor de un secreto.
+
+---
+
+### Cómo Aplicarlo a tu Caso
+
+Para tu aplicación, la cuenta de servicio `api-fastapi-bq@hospitaldigital-461216.iam.gserviceaccount.com` **debe tener asignado el rol "Accesor de secretos de Secret Manager"**. Esto le permitirá a tu código Python, al invocar `secret_client.access_secret_version(name=nombre_secreto)`, obtener exitosamente las credenciales de BigQuery sin recibir el error `403 Permission denied`.
+
+
+
+### Roles Actuales en la Cuenta de Servicio `api-fastapi-bq`
+
+La cuenta de servicio tiene los siguientes roles asignados, que son los que le otorgan permisos en el proyecto de Google Cloud:
+
+1. **Usuario con acceso a secretos de Secret Manager**
+    - **Equivalente en inglés:** `Secret Manager Secret Accessor`
+    - **Descripción:** ¡Este es el rol clave! Otorga el permiso `secretmanager.versions.access`, que permite a tu aplicación **leer el contenido real (el payload) de una versión específica de un secreto** almacenado en Secret Manager. Este permiso es esencial para que tu FastAPI pueda obtener las credenciales de BigQuery.
+2. **Usuario de trabajo de BigQuery**
+    - **Equivalente en inglés:** `BigQuery Job User`
+    - **Descripción:** Este rol permite a la cuenta de servicio ejecutar trabajos en BigQuery, como consultas (`client.query(query)`), trabajos de carga, exportación o copia. Es fundamental para interactuar con BigQuery a nivel de ejecución de operaciones.
+3. **Visualizador de datos de BigQuery**
+    - **Equivalente en inglés:** `BigQuery Data Viewer`
+    - **Descripción:** Este rol proporciona permisos de solo lectura sobre los datos dentro de BigQuery. Permite a la cuenta de servicio **leer filas de tablas y vistas**, lo cual es necesario para obtener los resultados de tus consultas BigQuery, como en tu endpoint `/nacionalidades`.
+
+
+
+# ANEXOS
+
+![Cuenta de servicio](https://storage.googleapis.com/fastapi-bigquery-credentials/cuenta_servicio.png)
+
+![IAM](https://storage.googleapis.com/fastapi-bigquery-credentials/iam.png)
+
+![Secret Manager](https://storage.googleapis.com/fastapi-bigquery-credentials/secret_manager.png)
+
+![Bucket](https://storage.googleapis.com/fastapi-bigquery-credentials/bucket.png)
