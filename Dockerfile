@@ -23,4 +23,9 @@ RUN pip install --no-cache-dir --upgrade pip \
     # Copiar el código fuente
 COPY ./app /code/app
 
-CMD ["python", "-m", "app.main"]
+# Puerto donde se ejecutará FastAPI
+EXPOSE 8000
+
+# Comando para ejecutar Uvicorn con auto-reload (solo en desarrollo)
+# En producción, quita `--reload` y usa más workers (--workers N)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

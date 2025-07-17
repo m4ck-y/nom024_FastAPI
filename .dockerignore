@@ -1,0 +1,22 @@
+# Ignorar archivos de entorno virtual
+.venv/
+venv/
+__pycache__/
+
+# Ignorar credenciales locales
+credentials.json
+*.key
+*.pem
+*.env
+
+# Ignorar archivos de desarrollo y editor
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Ignorar logs y caché
+*.log
+*.pyc
+*.pyo
+.pytest_cache/
