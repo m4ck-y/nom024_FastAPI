@@ -46,3 +46,17 @@ def obtener_nacionalidades():
     results = query_job.result()
 
     return [dict(row) for row in results]
+
+
+@app.get("/religiones")
+def obtener_religiones():
+    query = """
+        SELECT
+            * 
+        FROM
+            `hospitaldigital-461216.nom024.cat_religiones`
+    """
+    query_job = client.query(query)
+    results = query_job.result()
+
+    return [dict(row) for row in results]
