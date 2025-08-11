@@ -34,7 +34,7 @@ Objetivo:
 - Asegurar actualización continua mediante descarga e integración de catálogos oficiales.
 
 Documentación oficial y catálogos base:
-http://www.dgis.salud.gob.mx/contenidos/intercambio/iis_catalogos_gobmx.html
+[http://www.dgis.salud.gob.mx/contenidos/intercambio/iis_catalogos_gobmx.html](http://www.dgis.salud.gob.mx/contenidos/intercambio/iis_catalogos_gobmx.html)
 
 Contacto para dudas o uso:
 dgis@salud.gob.mx (Asunto: Catálogos)
