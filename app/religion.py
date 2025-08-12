@@ -5,8 +5,23 @@ from fastapi import APIRouter, Query
 from app.bd import client
 from google.cloud import bigquery
 
+MODULE_NAME = "religiones"
+
 # Se define el enrutador para las rutas relacionadas con la jerarquía religiosa.
-router_religion = APIRouter(prefix="/religiones", tags=["religiones"])
+router_religion = APIRouter(prefix=f"/{MODULE_NAME}", tags=[MODULE_NAME])
+
+TAG_RELIGIONES = {
+        "name": MODULE_NAME,
+        "description": """
+🔗 Estructura jerárquica:
+Credo → Grupo → Denominación → Religión
+
+🔍 Funcionalidad:
+- Listado por nivel jerárquico
+- Filtros ascendentes (por clave del nivel padre)
+- Acceso directo por clave única
+"""
+    }
 
 
 @router_religion.get("/credos")

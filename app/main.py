@@ -1,20 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from app.bd import client
-from app.religion import router_religion
+from app.religion import router_religion, TAG_RELIGIONES
+from app.nacionalidad import router_nacionalidades, TAG_NACIONALIDADES
+
 
 openapi_tags = [
-    {
-        "name": "religiones",
-        "description": """
-🔗 Estructura jerárquica:
-Credo → Grupo → Denominación → Religión
-
-🔍 Funcionalidad:
-- Listado por nivel jerárquico
-- Filtros ascendentes (por clave del nivel padre)
-- Acceso directo por clave única
-"""
-    }
+    TAG_NACIONALIDADES,
+    TAG_RELIGIONES,
 ]
 
 
@@ -67,18 +59,5 @@ Los Sistemas de Información de Registro Electrónico para la Salud (SIRES) debe
 """,
     openapi_tags=openapi_tags)
 
+app.include_router(router_nacionalidades)
 app.include_router(router_religion)
-
-# Endpoint para obtener todas las nacionalidades
-@app.get("/nacionalidades")
-def obtener_nacionalidades():
-    query = """
-        SELECT
-            * 
-        FROM
-            `hospitaldigital-461216.nom024.cat_nacionalidades`
-    """
-    query_job = client.query(query)
-    results = query_job.result()
-
-    return [dict(row) for row in results]
