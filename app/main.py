@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from app.bd import client
 from app.religion import router_religion, TAG_RELIGIONES
-from app.nacionalidad import router_nacionalidades, TAG_NACIONALIDADES
+from app.nacionalidad import router_nacionalidades
+from app.nacionalidad.config import TAG_NACIONALIDADES
 
 
 openapi_tags = [
