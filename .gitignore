@@ -10,6 +10,14 @@ __pycache__/*
 #SQLite
 *.db
 
+# Temporary files
 temp/*
+
+# Jupyter Notebook
 .ipynb_checkpoints
+
+# Sensitive credentials
 credentials.json
+
+# AI Development Configuration
+.kiro/
