@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class SchemaCodigoPostal(BaseModel):
-    D_CODIGO: int = Field(
+    D_CODIGO: str = Field(
         ...,
         description="Código Postal asentamiento",
-        examples=[43015]
+        examples=["03023"]
     )
     D_ASENTA: str = Field(
         ...,
@@ -37,35 +37,35 @@ class SchemaCodigoPostal(BaseModel):
         description="Código Postal de la Administración Postal que reparte al asentamiento",
         examples=[43007]
     )
-    C_ESTADO: int = Field(
+    C_ESTADO: str = Field(
         ...,
         description="Clave Entidad (INEGI, Marzo 2013)",
-        examples=[13]
+        examples=["13"]
     )
-    C_OFICINA: int = Field(
+    C_OFICINA: str = Field(
         ...,
         description="Código Postal de la oficina postal que reparte al asentamiento",
-        examples=[43007]
+        examples=["03023"]
     )
-    C_CP: Optional[str] = Field(
+    C_CP: Optional[int] = Field(
         None,
         description="Campo vacío o reservado",
         examples=[None]
     )
-    C_TIPO_ASENTA: int = Field(
+    C_TIPO_ASENTA: str = Field(
         ...,
         description="Clave Tipo de asentamiento (Catálogo SEPOMEX)",
-        examples=[29]
+        examples=["29"]
     )
-    C_MNPIO: int = Field(
+    C_MNPIO: str = Field(
         ...,
         description="Clave Municipio (INEGI, Marzo 2013)",
-        examples=[28]
+        examples=["28"]
     )
-    ID_ASENTA_CPCONS: int = Field(
+    ID_ASENTA_CPCONS: str = Field(
         ...,
         description="Identificador único del asentamiento (nivel municipal)",
-        examples=[12345]
+        examples=["12345"]
     )
     D_ZONA: str = Field(
         ...,

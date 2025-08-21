@@ -6,7 +6,11 @@ from app.codigo_postal.models import SchemaCodigoPostal
 
 
 @router_codigos_postales.get("")
-def obtener_codigos_postales(codigo_postal: int) -> list[SchemaCodigoPostal]:
+def obtener_codigos_postales(codigo_postal: str = Query(
+        ..., 
+        description="Código postal de 5 dígitos, puede iniciar con cero",
+        example="03023"
+    )) -> list[SchemaCodigoPostal]:
     """
     Recupera los registros que coincidan con el código postal recibido.
 
@@ -41,7 +45,7 @@ def obtener_codigos_postales(codigo_postal: int) -> list[SchemaCodigoPostal]:
 
     job_config = bigquery.QueryJobConfig(
         query_parameters=[
-            bigquery.ScalarQueryParameter("codigo_postal", "INT64", codigo_postal)
+            bigquery.ScalarQueryParameter("codigo_postal", "STRING", codigo_postal)
         ]
     )
 
