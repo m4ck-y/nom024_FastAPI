@@ -32,5 +32,6 @@ try:
     credenciales = service_account.Credentials.from_service_account_info(credenciales_dict)
     client = bigquery.Client(credentials=credenciales, project=credenciales.project_id)
 except Exception as e:
+    print(f"Error detallado inicializando BigQuery: {type(e).__name__}: {str(e)}")
     print(f"Error inicializando BigQuery: {str(e)}")
     client = None

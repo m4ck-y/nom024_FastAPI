@@ -3,11 +3,14 @@ from app.bd import client
 from app.religion import router_religion, TAG_RELIGIONES
 from app.nacionalidad import router_nacionalidades
 from app.nacionalidad.config import TAG_NACIONALIDADES
+from app.codigo_postal import router_codigos_postales
+from app.codigo_postal.config import TAG_CODIGOS_POSTALES
 
 
 openapi_tags = [
     TAG_NACIONALIDADES,
     TAG_RELIGIONES,
+    TAG_CODIGOS_POSTALES
 ]
 
 
@@ -62,3 +65,4 @@ Los Sistemas de Información de Registro Electrónico para la Salud (SIRES) debe
 
 app.include_router(router_nacionalidades)
 app.include_router(router_religion)
+app.include_router(router_codigos_postales)

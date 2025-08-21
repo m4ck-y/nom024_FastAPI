@@ -3,9 +3,26 @@ __pycache__/*
 *.py[cod]
 *$py.class
 
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
 # Enviroments
-*.venv/*
+*venv
+*/.venv/*
 .env
+
+# Editor files
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Test / coverage files
+.pytest_cache/
+.coverage
+htmlcov/
 
 #SQLite
 *.db
